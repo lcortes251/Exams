@@ -1,0 +1,132 @@
+
+R version 3.5.1 (2018-07-02) -- "Feather Spray"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[R.app GUI 1.70 (7543) x86_64-apple-darwin15.6.0]
+
+[Workspace restored from /Users/Laura/.RData]
+[History restored from /Users/Laura/.Rapp.history]
+
+> 
+Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.
+
+Loading required package: affy
+> library(GEOquery)
+Setting options('download.file.method.GEOquery'='auto')
+Setting options('GEOquery.inmemory.gpl'=FALSE)
+> setwd("/Users/Laura/Desktop")
+> targetfile <- "GSE1000_series_matrix.txt"
+> library(limma)
+
+Attaching package: ‘limma’
+
+The following object is masked from ‘package:BiocGenerics’:
+
+    plotMA
+
+> gse <- getGEO(filename=targetfile)
+Parsed with column specification:
+cols(
+  ID_REF = col_character(),
+  GSM15785 = col_double(),
+  GSM15786 = col_double(),
+  GSM15787 = col_double(),
+  GSM15788 = col_double(),
+  GSM15789 = col_double(),
+  GSM15790 = col_double(),
+  GSM15791 = col_double(),
+  GSM15792 = col_double(),
+  GSM15794 = col_double(),
+  GSM15795 = col_double()
+)
+File stored at: 
+/var/folders/y8/f1hrsz096k3_ysysnbfbkwt00000gn/T//RtmpySdxdD/GPL96.soft
+|===================================================| 100%   43 MB
+> head(exprs(gse))
+           GSM15785  GSM15786  GSM15787  GSM15788  GSM15789
+1007_s_at 320.46487 232.99429 321.19900 299.28944 292.01587
+1053_at   388.45703 422.90935 369.84420 348.26369 384.67971
+117_at     65.47252  64.10611  68.17089  62.67997  66.17509
+121_at    512.24668 439.16253 518.27081 455.00336 493.74794
+1255_g_at  23.00565  22.93035  23.53591  22.12609  21.92042
+1294_at   130.15633 133.85308 116.79002 122.72529 126.37790
+           GSM15790  GSM15791  GSM15792  GSM15794  GSM15795
+1007_s_at 247.21426 245.78036 222.25376 239.04164 305.37813
+1053_at   375.41174 363.98989 382.87684 390.21179 339.23146
+117_at     52.31133  59.67616  71.36348  52.21511  64.44750
+121_at    513.96878 499.74921 461.69829 441.98700 495.79907
+1255_g_at  19.79300  21.17560  22.05064  22.35930  22.24714
+1294_at   108.06999 121.74640 147.43306 102.83987 132.22950
+> gse_log <- log2(exprs(gse))
+> head(gse_log()
++ 
+
+> head(gse_log)
+          GSM15785 GSM15786 GSM15787 GSM15788 GSM15789 GSM15790
+1007_s_at 8.324022 7.864151 8.327324 8.225398 8.189903 7.949618
+1053_at   8.601611 8.724205 8.530774 8.444036 8.587514 8.552330
+117_at    6.032818 6.002390 6.091084 5.969933 6.048216 5.709051
+121_at    9.000695 8.778611 9.017562 8.829733 8.947631 9.005537
+1255_g_at 4.523916 4.519186 4.556792 4.467677 4.454204 4.306918
+1294_at   7.024102 7.064507 6.867773 6.939289 6.981600 6.755822
+          GSM15791 GSM15792 GSM15794 GSM15795
+1007_s_at 7.941226 7.796064 7.901118 8.254453
+1053_at   8.507755 8.580737 8.608114 8.406126
+117_at    5.899083 6.157114 5.706395 6.010053
+121_at    8.965060 8.850807 8.787860 8.953612
+1255_g_at 4.404331 4.462749 4.482803 4.475548
+1294_at   6.927735 7.203916 6.684256 7.046900
+> treatment <- rowMeans(gse_log[,1:5])
+> head(treatment)
+1007_s_at   1053_at    117_at    121_at 1255_g_at   1294_at 
+ 8.186159  8.577628  6.028888  8.914847  4.504355  6.975454 
+> control <- rowMeans(gse_log[,6:10])
+> head(control)
+1007_s_at   1053_at    117_at    121_at 1255_g_at   1294_at 
+ 7.968496  8.531012  5.896339  8.912575  4.426470  6.923726 
+> fold <- treatment/control
+> head(fold)
+1007_s_at   1053_at    117_at    121_at 1255_g_at   1294_at 
+ 1.027316  1.005464  1.022480  1.000255  1.017595  1.007471 
+> fold2 <- rowMeans(gse_log[,1:5])/rowMeans(gse_log[,6:10])
+> head(fold2)
+1007_s_at   1053_at    117_at    121_at 1255_g_at   1294_at 
+ 1.027316  1.005464  1.022480  1.000255  1.017595  1.007471 
+> write.csv(fold, file="Exam1_fold.csv", row.names=FALSE)
+> boxplot(treatment, col="green", main="Treatment")
+> boxplot(control, col="red", main="red")
+> par(mfrow=c(2,2))
+> boxplot(treatment, col="green", main="Treatment")
+> boxplot(control, col="red", main="red")
+> par(mfrow=c(2,1))
+> boxplot(treatment, col="green", main="Treatment")
+> boxplot(control, col="red", main="red")
+> par(mfrow=c(1,2))
+> boxplot(treatment, col="green", main="Treatment")
+> boxplot(control, col="red", main="Control")
+> jpeg('Exam1_plot_Cortes')
+> par(mfrow=c(1,2))
+> boxplot(treatment, col="green", main="Treatment")
+> boxplot(control, col="red", main="Control")
+> dev.off()
+RStudioGD 
+        2 
